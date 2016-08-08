@@ -16,18 +16,18 @@ use Drupal\Core\Session\AccountInterface;
  */
 class SocialLoginBlock extends BlockBase {
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function blockAccess(AccountInterface $account) {
-		return AccessResult::allowedIf($account->isAnonymous());
-	}
+  /**
+   * {@inheritdoc}
+   */
+  public function blockAccess(AccountInterface $account) {
+    return AccessResult::allowedIf($account->isAnonymous());
+  }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function build() {
-		return \Drupal::formBuilder()->getForm('Drupal\social_login\Form\SocialLoginBlockForm');
-	}
+  /**
+   * {@inheritdoc}
+   */
+  public function build() {
+    return \Drupal::formBuilder()->getForm('Drupal\social_login\Form\SocialLoginBlockForm');
+  }
+
 }
-?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * On Install: creates the tables required by the OneAll Social Login module.
@@ -59,8 +60,8 @@ function social_login_schema() {
       'oasliid',
     ),
   );
-  
-  // new authmap entries (authmap removed in D8).
+
+  // New authmap entries (authmap removed in D8).
   $schema['oneall_social_login_authmap'] = array(
     'description' => 'D7 equivalent authmap entries.',
     'fields' => array(
