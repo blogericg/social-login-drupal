@@ -89,68 +89,29 @@ function social_login_schema() {
     ),
   );
 
-  // Used to store module settings.
-  $schema['oneall_social_login_settings'] = array(
-    'description' => 'Used to store module settings.',
-    'fields' => array(
-      'oaslsid' => array(
-        'description' => 'The primary key of this table.',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'setting' => array(
-        'description' => 'The name of the setting.',
-        'type' => 'varchar',
-        'length' => '64',
-        'not null' => TRUE,
-      ),
-      'value' => array(
-        'description' => 'The value of the setting.',
-        'type' => 'varchar',
-        'length' => '64',
-        'not null' => TRUE,
-      ),
-    ),
-    'indexes' => array(
-      'setting' => array(
-        'setting',
-      ),
-    ),
-    'primary key' => array(
-      'oaslsid',
-    ),
-  );
-
   return $schema;
 }
 
 /**
- * Implements hook_install().
+ * Convert social_login settings to drupal config.
  */
-function social_login_install() {
+function social_login_update_8001(&$sandbox) {
 
-  // Start transaction.
-  $db_transaction = db_transaction();
+  $results = db_query("SELECT setting, value FROM {oneall_social_login_settings}");
 
-  // Install.
-  try {
-    drupal_install_schema('oneall_social_login_identities');
-    drupal_install_schema('oneall_social_login_authmap');
-    drupal_install_schema('oneall_social_login_settings');
+  // Unsure we have current element set to 0.
+  if (!isset($sandbox['current'])) {
+    $sandbox['current'] = 0;
+    $sandbox['total'] = count($results);
   }
-  catch (Exception $e) {
-    $db_transaction->rollback();
+
+  foreach ($results as $result) {
+    \Drupal::configFactory()->getEditable('social_login.settings')
+      ->set($result->setting, $result->value)
+      ->save();
   }
-}
 
-/**
- * Implements hook_uninstall().
- */
-function social_login_uninstall() {
+  $sandbox['current']++;
 
-  // Drop tables.
-  drupal_uninstall_schema('oneall_social_login_identities');
-  drupal_uninstall_schema('oneall_social_login_authmap');
-  drupal_uninstall_schema('oneall_social_login_settings');
+  $sandbox['#finished'] = (float) $sandbox['total'] / (float) $sandbox['current'];
 }
